@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { db } from '../../firebase/config';
 import { collection, getDocs, addDoc, serverTimestamp } from 'firebase/firestore';
 
-// Interfaz para definir el tipo de dato de un producto
 interface Producto {
   id: string;
   nombre: string;
@@ -17,7 +16,6 @@ export default function InventarioPage() {
   const [nuevoProducto, setNuevoProducto] = useState({ nombre: '', cantidad: 0, unidad: '' });
   const [loading, setLoading] = useState(true);
 
-  // Función para cargar los productos desde Firestore
   const fetchProductos = async () => {
     try {
       const querySnapshot = await getDocs(collection(db, "inventario"));
@@ -33,12 +31,10 @@ export default function InventarioPage() {
     }
   };
 
-  // Cargar productos solo una vez, cuando el componente se monta
   useEffect(() => {
     fetchProductos();
   }, []);
 
-  // Función para manejar el envío del formulario y agregar un nuevo producto
   const handleAddProducto = async (e: React.FormEvent) => {
     e.preventDefault();
     if (nuevoProducto.nombre && nuevoProducto.cantidad > 0 && nuevoProducto.unidad) {
@@ -47,8 +43,8 @@ export default function InventarioPage() {
           ...nuevoProducto,
           fechaUltimaActualizacion: serverTimestamp(),
         });
-        setNuevoProducto({ nombre: '', cantidad: 0, unidad: '' }); // Limpiar formulario
-        fetchProductos(); // Volver a cargar la lista de productos actualizada
+        setNuevoProducto({ nombre: '', cantidad: 0, unidad: '' });
+        fetchProductos();
       } catch (error) {
         console.error("Error al agregar producto: ", error);
       }
@@ -57,9 +53,7 @@ export default function InventarioPage() {
 
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-bold mb-4">Gestión de Inventario</h1>
-      
-      {/* Formulario para agregar nuevos productos */}
+      <h1 className="text-2xl font-bold mb-4">Gestión de Inventario (Firebase)</h1>
       <form onSubmit={handleAddProducto} className="mb-6 p-4 border rounded-lg bg-gray-50">
         <h2 className="text-xl mb-3 font-semibold">Agregar Nuevo Producto</h2>
         <div className="flex flex-wrap items-center gap-4">
@@ -92,12 +86,8 @@ export default function InventarioPage() {
           </button>
         </div>
       </form>
-
-      {/* Tabla para mostrar el inventario actual */}
       <h2 className="text-xl mb-3 font-semibold">Inventario Actual</h2>
-      {loading ? (
-        <p>Cargando productos...</p>
-      ) : (
+      {loading ? (<p>Cargando productos...</p>) : (
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white border">
             <thead className="bg-gray-200">
@@ -117,11 +107,7 @@ export default function InventarioPage() {
                   </tr>
                 ))
               ) : (
-                <tr>
-                  <td colSpan={3} className="text-center py-4 text-gray-500">
-                    No hay productos en el inventario.
-                  </td>
-                </tr>
+                <tr><td colSpan={3} className="text-center py-4 text-gray-500">No hay productos en el inventario.</td></tr>
               )}
             </tbody>
           </table>
